@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Smart Islamic App</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        /* CSS Variables - Light Theme */
+        :root {
+            --primary: #0a5c36;
+            --primary-light: #12804d;
+            --primary-dark: #064024;
+            --gold: #d4af37;
+            --gold-light: #f5d76e;
+            --bg: #f4f7f6;
+            --surface: #ffffff;
+            --text-main: #2d3748;
+            --text-muted: #718096;
+            --border: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --nav-bg: #ffffff;
+            --radius: 16px;
+            
+            /* Tajweed Colors */
+            --t-ghunnah: #28a745;
+            --t-idgham: #007bff;
+            --t-ikhfa: #fd7e14;
+            --t-qalqalah: #6f42c1;
+            --t-madd: #dc3545;
+        }
+
+        /* Dark Theme */
+        [data-theme="dark"] {
+            --primary: #12804d;
+            --primary-light: #1b9e63;
+            --primary-dark: #0a5c36;
+            --gold: #e5c158;
+            --bg: #111827;
+            --surface: #1f2937;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --border: #374151;
+            --nav-bg: #1f2937;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Reset & Base */
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Poppins', sans-serif; background-color: var(--bg); color: var(--text-main); transition: background-color 0.3s ease, color 0.3s ease; overflow-x: hidden; padding-bottom: 80px; }
+        button, input { font-family: inherit; border: none; outline: none; background: none; color: inherit; }
+        button { cursor: pointer; }
+        
+        /* Typography */
+        .arabic { font-family: 'Amiri', serif; font-size: 28px; line-height: 2.2; text-align: right; direction: rtl; }
+        h1, h2, h3 { font-weight: 600; }
+        
+        /* Layout */
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 20px; background: var(--surface); box-shadow: var(--shadow); position: sticky; top: 0; z-index: 100; border-bottom-left-radius: var(--radius); border-bottom-right-radius: var(--radius); }
+        .header h1 { font-size: 20px; color: var(--primary); font-weight: 700; display: flex; align-items: center; gap: 10px; }
+        .container { padding: 20px; }
+        
+        /* Cards */
+        .card { background: var(--surface); border-radius: var(--radius); padding: 20px; margin-bottom: 20px; box-shadow: var(--shadow); transition: transform 0.2s ease, box-shadow 0.2s ease; border: 1px solid var(--border); position: relative; overflow: hidden; }
+        .card.interactive:active { transform: scale(0.98); }
+        
+        /* Navigation */
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: var(--nav-bg); display: flex; justify-content: space-between; padding: 12px 25px 25px; box-shadow: 0 -4px 20px rgba(0,0,0,0.05); z-index: 1000; border-top: 1px solid var(--border); transition: background-color 0.3s ease; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 6px; color: var(--text-muted); font-size: 12px; font-weight: 500; transition: color 0.3s ease; }
+        .nav-item i { font-size: 20px; transition: transform 0.3s ease; }
+        .nav-item.active { color: var(--primary); }
+        .nav-item.active i { transform: translateY(-3px); color: var(--gold); }
+
+        /* Screens */
+        .screen { display: none; animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .screen.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Specific Components */
+        .hero-card { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; text-align: center; }
+        .hero-card h2 { font-size: 36px; font-weight: 700; color: var(--gold); margin: 10px 0; }
+        .hero-card p { opacity: 0.9; }
+        
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .action-btn { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; box-shadow: var(--shadow); font-weight: 500; color: var(--text-main); }
+        .action-btn i { font-size: 24px; color: var(--primary); }
+        
+        .search-bar { width: 100%; padding: 15px 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 30px; margin-bottom: 20px; box-shadow: var(--shadow); font-size: 16px; color: var(--text-main); display: flex; align-items: center; gap: 10px; }
+        .search-bar input { flex: 1; width: 100%; }
+        
+        .list-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.2s; }
+        .list-item:last-child { border-bottom: none; }
+        .number-badge { width: 40px; height: 40px; border-radius: 50%; background: rgba(10, 92, 54, 0.1); color: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 700; position: relative; }
+        .number-badge::after { content: ''; position: absolute; width: 100%; height: 100%; border: 2px solid var(--gold); border-radius: 50%; transform: rotate(45deg); opacity: 0.5; }
+        
+        .ayah-block { border-bottom: 1px dashed var(--border); padding-bottom: 20px; margin-bottom: 20px; position: relative; }
+        .ayah-controls { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; font-size: 14px; color: var(--text-muted); }
+        .btn-icon { width: 40px; height: 40px; border-radius: 50%; background: var(--bg); display: flex; align-items: center; justify-content: center; color: var(--primary); font-size: 16px; box-shadow: var(--shadow); }
+        .playing-highlight { background-color: rgba(212, 175, 55, 0.1); border-radius: var(--radius); padding: 10px; }
+        
+        /* Audio Player Bar */
+        .audio-bar { position: fixed; bottom: 80px; left: 0; width: 100%; background: var(--surface); padding: 15px 20px; display: none; align-items: center; justify-content: space-between; box-shadow: 0 -4px 15px rgba(0,0,0,0.1); z-index: 999; border-top: 2px solid var(--primary); }
+        .audio-bar.active { display: flex; }
+        .audio-controls { display: flex; gap: 15px; }
+
+        /* Compass */
+        .compass-wrapper { position: relative; width: 260px; height: 260px; margin: 30px auto; }
+        .compass-ring { width: 100%; height: 100%; border-radius: 50%; border: 4px solid var(--primary); background: var(--bg); position: relative; transition: transform 0.1s linear; box-shadow: inset 0 0 20px rgba(0,0,0,0.05), var(--shadow-lg); }
+        .compass-ring::before { content: 'N'; position: absolute; top: 10px; left: 50%; transform: translateX(-50%); font-weight: bold; color: var(--text-muted); }
+        .kaaba-indicator { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); color: var(--gold); font-size: 24px; }
+        .compass-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 20px; height: 20px; background: var(--primary); border-radius: 50%; box-shadow: 0 0 0 5px rgba(10, 92, 54, 0.2); }
+
+        /* Tasbih */
+        .tasbih-circle { width: 200px; height: 200px; border-radius: 50%; background: linear-gradient(135deg, var(--surface), var(--bg)); border: 8px solid var(--primary); margin: 40px auto; display: flex; align-items: center; justify-content: center; font-size: 64px; font-weight: 700; color: var(--primary); box-shadow: var(--shadow-lg), inset 0 10px 20px rgba(0,0,0,0.05); cursor: pointer; user-select: none; transition: transform 0.1s; }
+        .tasbih-circle:active { transform: scale(0.95); background: var(--primary-light); color: white; border-color: var(--primary-dark); }
+
+        /* Tajweed Classes */
+        .t-ghunnah { color: var(--t-ghunnah); }
+        .t-idgham { color: var(--t-idgham); }
+        .t-ikhfa { color: var(--t-ikhfa); }
+        .t-qalqalah { color: var(--t-qalqalah); }
+        .t-madd { color: var(--t-madd); }
+
+        /* Utility */
+        .loader { display: flex; justify-content: center; padding: 40px; color: var(--primary); font-size: 24px; }
+        .btn-primary { width: 100%; background: var(--primary); color: white; padding: 15px; border-radius: var(--radius); font-size: 16px; font-weight: 600; text-align: center; margin-top: 10px; box-shadow: var(--shadow); }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <h1><i class="fa-solid fa-moon" style="color: var(--gold);"></i> Smart Islamic</h1>
+        <div style="display: flex; gap: 15px;">
+            <button onclick="toggleTheme()" class="btn-icon" style="box-shadow: none; background: var(--bg);"><i class="fa-solid fa-circle-half-stroke"></i></button>
+        </div>
+    </header>
+
+    <div class="audio-bar" id="audioPlayer">
+        <div style="font-size: 14px; font-weight: 500;">
+            <div id="audioTitle" style="color: var(--primary);">Al-Fatihah</div>
+            <div id="audioSubtitle" style="color: var(--text-muted); font-size: 12px;">Ayah 1</div>
+        </div>
+        <div class="audio-controls">
+            <button onclick="playPrevAyah()" class="btn-icon"><i class="fa-solid fa-backward-step"></i></button>
+            <button onclick="toggleAudio()" class="btn-icon" style="background: var(--primary); color: white;" id="playPauseBtn"><i class="fa-solid fa-pause"></i></button>
+            <button onclick="playNextAyah()" class="btn-icon"><i class="fa-solid fa-forward-step"></i></button>
+            <button onclick="stopAudio()" class="btn-icon"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <audio id="quranAudioEl"></audio>
+    </div>
+
+    <main id="home" class="screen active container">
+        <div class="card hero-card">
+            <p style="text-transform: uppercase; font-size: 12px; letter-spacing: 2px;">Next Prayer</p>
+            <h2 id="homeNextPrayer">Asr</h2>
+            <div style="font-size: 48px; font-weight: 700; margin: 10px 0; font-family: monospace;" id="homeCountdown">--:--:--</div>
+            <p id="homeLocation"><i class="fa-solid fa-location-dot"></i> Locating...</p>
+        </div>
+
+        <div class="card">
+            <h3 style="margin-bottom: 15px;"><i class="fa-solid fa-clock" style="color: var(--primary);"></i> Today's Prayers</h3>
+            <div id="homePrayerList">
+                <div class="loader"><i class="fa-solid fa-circle-notch fa-spin"></i></div>
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <button class="action-btn interactive" onclick="switchTab('quran')">
+                <i class="fa-solid fa-book-open"></i>
+                <span>Read Quran</span>
+            </button>
+            <button class="action-btn interactive" onclick="switchTab('tools'); openTool('qibla')">
+                <i class="fa-solid fa-compass"></i>
+                <span>Qibla</span>
+            </button>
+            <button class="action-btn interactive" onclick="switchTab('hadith')">
+                <i class="fa-solid fa-book"></i>
+                <span>Hadith</span>
+            </button>
+            <button class="action-btn interactive" onclick="switchTab('tools'); openTool('tasbih')">
+                <i class="fa-solid fa-hand-holding-heart"></i>
+                <span>Tasbih</span>
+            </button>
+        </div>
+    </main>
+
+    <main id="quran" class="screen container">
+        <div id="quranListContainer">
+            <div class="search-bar">
+                <i class="fa-solid fa-search"></i>
+                <input type="text" id="surahSearch" placeholder="Search Surah (e.g. Yaseen)">
+            </div>
+            <div class="card" style="padding: 0; overflow: hidden;" id="surahList">
+                <div class="loader"><i class="fa-solid fa-circle-notch fa-spin"></i></div>
+            </div>
+        </div>
+
+        <div id="quranReaderContainer" class="hidden">
+            <button onclick="closeQuranReader()" style="margin-bottom: 20px; font-size: 16px; font-weight: 500;"><i class="fa-solid fa-arrow-left"></i> Back to Surahs</button>
+            <div class="card">
+                <div style="text-align: center; border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 20px;">
+                    <h2 id="readerSurahNameEn" style="color: var(--primary);"></h2>
+                    <h1 id="readerSurahNameAr" class="arabic" style="font-size: 36px; margin: 10px 0; color: var(--gold);"></h1>
+                    <p id="readerSurahInfo" style="color: var(--text-muted); font-size: 14px;"></p>
+                </div>
+                <div id="ayahsContainer">
+                    <div class="loader"><i class="fa-solid fa-circle-notch fa-spin"></i></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <main id="prayer" class="screen container">
+        <div class="card hero-card" style="background: linear-gradient(135deg, var(--gold), #b89626);">
+            <h3>Gregorian & Hijri Date</h3>
+            <p id="prayerFullDate" style="font-size: 18px; margin-top: 10px;"></p>
+        </div>
+        <div class="card">
+            <h3 style="margin-bottom: 20px; text-align: center;">Full Schedule</h3>
+            <div id="fullPrayerList">
+                <div class="loader"><i class="fa-solid fa-circle-notch fa-spin"></i></div>
+            </div>
+        </div>
+    </main>
+
+    <main id="hadith" class="screen container">
+        <div class="card hero-card" style="background: linear-gradient(135deg, #1f2937, #111827);">
+            <h3>Sahih Bukhari</h3>
+            <p style="font-size: 14px; margin-top: 10px; color: var(--gold);">Complete Collection</p>
+        </div>
+        <button class="btn-primary" onclick="loadRandomHadith()" style="margin-bottom: 20px;"><i class="fa-solid fa-shuffle"></i> Read Random Hadith</button>
+        <div class="card" id="hadithContent">
+            <p style="text-align: center; color: var(--text-muted);">Click the button above to discover a random Hadith from Sahih Bukhari.</p>
+        </div>
+    </main>
+
+    <main id="tools" class="screen container">
+        
+        <div id="toolsMenu">
+            <h2 style="margin-bottom: 20px;">Islamic Tools</h2>
+            <div class="grid-2">
+                <button class="action-btn interactive" onclick="openTool('tasbih')"><i class="fa-solid fa-hand-holding-heart"></i><span>Tasbih Counter</span></button>
+                <button class="action-btn interactive" onclick="openTool('qibla')"><i class="fa-solid fa-compass"></i><span>Qibla Compass</span></button>
+                <button class="action-btn interactive" onclick="openTool('names')"><i class="fa-solid fa-list-ul"></i><span>99 Names</span></button>
+                <button class="action-btn interactive" onclick="openTool('duas')"><i class="fa-solid fa-hands-praying"></i><span>Daily Duas</span></button>
+            </div>
+        </div>
+
+        <div id="tool-tasbih" class="hidden">
+            <button onclick="closeTool()" style="margin-bottom: 20px;"><i class="fa-solid fa-arrow-left"></i> Back</button>
+            <div class="card" style="text-align: center;">
+                <h2>Digital Tasbih</h2>
+                <div class="tasbih-circle" onclick="incrementTasbih()" id="tasbihDisplay">0</div>
+                <div style="display: flex; justify-content: center; gap: 15px; margin-top: 20px;">
+                    <button class="btn-primary" style="width: auto; padding: 10px 20px; background: var(--bg); color: var(--text-main); border: 1px solid var(--border);" onclick="resetTasbih()"><i class="fa-solid fa-rotate-left"></i> Reset</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="tool-qibla" class="hidden">
+            <button onclick="closeTool()" style="margin-bottom: 20px;"><i class="fa-solid fa-arrow-left"></i> Back</button>
+            <div class="card" style="text-align: center;">
+                <h2>Qibla Compass</h2>
+                <p style="color: var(--text-muted); font-size: 14px; margin-top: 10px;">Place phone flat and follow the arrow.</p>
+                <button id="startCompassBtn" class="btn-primary" onclick="initCompass()" style="margin-top: 20px;">Calibrate Compass</button>
+                
+                <div class="compass-wrapper hidden" id="compassUI">
+                    <div class="compass-ring" id="compassRing">
+                        <i class="fa-solid fa-kaaba kaaba-indicator"></i>
+                    </div>
+                    <div class="compass-center"></div>
+                </div>
+                <p id="compassAngle" style="margin-top: 20px; font-weight: 600; font-size: 18px;"></p>
+            </div>
+        </div>
+
+        <div id="tool-names" class="hidden">
+            <button onclick="closeTool()" style="margin-bottom: 20px;"><i class="fa-solid fa-arrow-left"></i> Back</button>
+            <div class="card"><h3 style="text-align:center;">99 Names of Allah</h3><p style="text-align:center; margin-top:10px; color:var(--text-muted);">Loaded via external structure in full app version.</p></div>
+        </div>
+        <div id="tool-duas" class="hidden">
+            <button onclick="closeTool()" style="margin-bottom: 20px;"><i class="fa-solid fa-arrow-left"></i> Back</button>
+            <div class="card"><h3 style="text-align:center;">Daily Duas</h3><p style="text-align:center; margin-top:10px; color:var(--text-muted);">Loaded via external structure in full app version.</p></div>
+        </div>
+
+    </main>
+
+    <nav class="bottom-nav">
+        <div class="nav-item active" onclick="switchTab('home')" id="nav-home">
+            <i class="fa-solid fa-house"></i><span>Home</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('quran')" id="nav-quran">
+            <i class="fa-solid fa-book-quran"></i><span>Quran</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('prayer')" id="nav-prayer">
+            <i class="fa-solid fa-clock"></i><span>Prayer</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('hadith')" id="nav-hadith">
+            <i class="fa-solid fa-book"></i><span>Hadith</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('tools')" id="nav-tools">
+            <i class="fa-solid fa-toolbox"></i><span>Tools</span>
+        </div>
+    </nav>
+
+    <script>
+        // --- State Management & Initialization ---
+        const state = {
+            theme: localStorage.getItem('theme') || 'light',
+            tasbihCount: parseInt(localStorage.getItem('tasbihCount')) || 0,
+            location: { lat: null, lng: null },
+            prayerData: null,
+            quranList: [],
+            activeAyahs: [],
+            currentAudioIndex: -1,
+            qiblaBearing: 0
+        };
+
+        const API_ALQURAN = 'https://api.alquran.cloud/v1';
+        const API_ALADHAN = 'https://api.aladhan.com/v1/timings';
+        const API_HADITH = 'https://api.hadith.gading.dev/books/bukhari';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (state.theme === 'dark') document.body.setAttribute('data-theme', 'dark');
+            document.getElementById('tasbihDisplay').innerText = state.tasbihCount;
+            initGeolocation();
+        });
+
+        // --- UI & Navigation ---
+        function switchTab(tabId) {
+            document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById(tabId).classList.add('active');
+            document.getElementById(`nav-${tabId}`).classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            // Lazy load tab data
+            if (tabId === 'quran' && state.quranList.length === 0) fetchSurahList();
+            if (tabId === 'prayer' && state.prayerData) renderFullPrayerSchedule();
+        }
+
+        function toggleTheme() {
+            state.theme = state.theme === 'light' ? 'dark' : 'light';
+            document.body.setAttribute('data-theme', state.theme);
+            localStorage.setItem('theme', state.theme);
+        }
+
+        // --- Prayer Times & Geolocation ---
+        function initGeolocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(pos => {
+                    state.location.lat = pos.coords.latitude;
+                    state.location.lng = pos.coords.longitude;
+                    fetchPrayerTimes();
+                }, err => {
+                    document.getElementById('homeLocation').innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Location Denied. Using Default (Mecca).';
+                    state.location.lat = 21.4225; state.location.lng = 39.8262;
+                    fetchPrayerTimes();
+                });
+            }
+        }
+
+        async function fetchPrayerTimes() {
+            try {
+                const unix = Math.floor(Date.now() / 1000);
+                const res = await fetch(`${API_ALADHAN}/${unix}?latitude=${state.location.lat}&longitude=${state.location.lng}&method=2`);
+                const data = await res.json();
+                state.prayerData = data.data;
+                
+                renderHomePrayers();
+                setupNextPrayerTimer();
+                
+                document.getElementById('prayerFullDate').innerText = `${state.prayerData.date.readable} | ${state.prayerData.date.hijri.day} ${state.prayerData.date.hijri.month.en} ${state.prayerData.date.hijri.year}`;
+                if (document.getElementById('prayer').classList.contains('active')) renderFullPrayerSchedule();
+            } catch (error) {
+                console.error("Prayer fetch error", error);
+            }
+        }
+
+        function renderHomePrayers() {
+            const list = document.getElementById('homePrayerList');
+            const timings = state.prayerData.timings;
+            const prayers = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
+            
+            list.innerHTML = prayers.map(p => `
+                <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border);">
+                    <span style="font-weight: 500;">${p}</span>
+                    <span style="color: var(--primary); font-family: monospace; font-size: 16px;">${formatAMPM(timings[p])}</span>
+                </div>
+            `).join('');
+        }
+
+        function renderFullPrayerSchedule() {
+            const list = document.getElementById('fullPrayerList');
+            const timings = state.prayerData.timings;
+            const allPrayers = ['Fajr', 'Sunrise', 'Dhuhr', 'Asr', 'Sunset', 'Maghrib', 'Isha', 'Midnight'];
+            
+            list.innerHTML = allPrayers.map(p => `
+                <div style="display: flex; justify-content: space-between; padding: 15px 0; border-bottom: 1px solid var(--border);">
+                    <span style="font-weight: 500; font-size: 16px;">${p}</span>
+                    <span style="color: var(--primary); font-family: monospace; font-size: 18px; font-weight: 600;">${formatAMPM(timings[p])}</span>
+                </div>
+            `).join('');
+        }
+
+        function formatAMPM(time24) {
+            let [h, m] = time24.split(':');
+            h = parseInt(h);
+            const ampm = h >= 12 ? 'PM' : 'AM';
+            h = h % 12 || 12;
+            return `${h}:${m} ${ampm}`;
+        }
+
+        function setupNextPrayerTimer() {
+            const timings = state.prayerData.timings;
+            const schedule = [
+                { name: 'Fajr', time: timings.Fajr },
+                { name: 'Dhuhr', time: timings.Dhuhr },
+                { name: 'Asr', time: timings.Asr },
+                { name: 'Maghrib', time: timings.Maghrib },
+                { name: 'Isha', time: timings.Isha }
+            ];
+
+            setInterval(() => {
+                const now = new Date();
+                const currentMins = now.getHours() * 60 + now.getMinutes();
+                const currentSecs = now.getSeconds();
+
+                let next = schedule.find(p => timeToMins(p.time) > currentMins);
+                if (!next) next = { name: 'Fajr', time: schedule[0].time }; // Next day
+
+                let targetMins = timeToMins(next.time);
+                if (targetMins < currentMins) targetMins += 1440; // Add 24h
+
+                let diffMins = targetMins - currentMins - 1;
+                let diffSecs = 60 - currentSecs;
+                
+                const hrs = String(Math.floor(diffMins / 60)).padStart(2, '0');
+                const mins = String(diffMins % 60).padStart(2, '0');
+                const secs = String(diffSecs).padStart(2, '0');
+
+                document.getElementById('homeNextPrayer').innerText = next.name;
+                document.getElementById('homeCountdown').innerText = `${hrs}:${mins}:${secs}`;
+            }, 1000);
+        }
+
+        function timeToMins(time) {
+            const [h, m] = time.split(':');
+            return parseInt(h) * 60 + parseInt(m);
+        }
+
+        // --- Quran Section ---
+        async function fetchSurahList() {
+            try {
+                const res = await fetch(`${API_ALQURAN}/surah`);
+                const data = await res.json();
+                state.quranList = data.data;
+                renderSurahs(state.quranList);
+            } catch (err) {
+                document.getElementById('surahList').innerHTML = '<p class="loader">Failed to load Quran.</p>';
+            }
+        }
+
+        function renderSurahs(list) {
+            const container = document.getElementById('surahList');
+            container.innerHTML = list.map(s => `
+                <div class="list-item" onclick="openSurah(${s.number}, '${s.englishName}', '${s.name}', '${s.revelationType}', ${s.numberOfAyahs})">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <div class="number-badge">${s.number}</div>
+                        <div>
+                            <div style="font-weight: 600; font-size: 16px;">${s.englishName}</div>
+                            <div style="font-size: 12px; color: var(--text-muted);">${s.revelationType} • ${s.numberOfAyahs} Ayahs</div>
+                        </div>
+                    </div>
+                    <div class="arabic" style="font-size: 20px; color: var(--primary);">${s.name}</div>
+                </div>
+            `).join('');
+        }
+
+        document.getElementById('surahSearch').addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            const filtered = state.quranList.filter(s => s.englishName.toLowerCase().includes(term));
+            renderSurahs(filtered);
+        });
+
+        async function openSurah(id, nameEn, nameAr, revType, ayahCount) {
+            document.getElementById('quranListContainer').classList.add('hidden');
+            document.getElementById('quranReaderContainer').classList.remove('hidden');
+            
+            document.getElementById('readerSurahNameEn').innerText = nameEn;
+            document.getElementById('readerSurahNameAr').innerText = nameAr;
+            document.getElementById('readerSurahInfo').innerText = `${revType} • ${ayahCount} Verses`;
+            
+            const container = document.getElementById('ayahsContainer');
+            container.innerHTML = '<div class="loader"><i class="fa-solid fa-circle-notch fa-spin"></i> Loading text & audio...</div>';
+
+            try {
+                // Fetch Audio and Text Edition (Alafasy)
+                const res = await fetch(`${API_ALQURAN}/surah/${id}/ar.alafasy`);
+                const data = await res.json();
+                state.activeAyahs = data.data.ayahs;
+                
+                container.innerHTML = state.activeAyahs.map((ayah, idx) => `
+                    <div class="ayah-block" id="ayah-${idx}">
+                        <div class="arabic">${simulateTajweed(ayah.text)} <span style="color: var(--gold);">﴿${ayah.numberInSurah}﴾</span></div>
+                        <div class="ayah-controls">
+                            <span>Ayah ${ayah.numberInSurah}</span>
+                            <div style="display: flex; gap: 10px;">
+                                <button class="btn-icon" onclick="copyText('${ayah.text}')" style="width: 32px; height: 32px; font-size: 12px;"><i class="fa-solid fa-copy"></i></button>
+                                <button class="btn-icon" onclick="playAyah(${idx})" style="width: 32px; height: 32px; font-size: 12px;"><i class="fa-solid fa-play"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (err) {
+                container.innerHTML = '<p class="loader">Error loading Surah.</p>';
+            }
+        }
+
+        function closeQuranReader() {
+            document.getElementById('quranListContainer').classList.remove('hidden');
+            document.getElementById('quranReaderContainer').classList.add('hidden');
+            stopAudio();
+        }
+
+        /* Tajweed Note: True Tajweed requires morphological text analysis not provided by the 
+           standard AlQuran Cloud text API. This function demonstrates where the logic applies classes. 
+        */
+        function simulateTajweed(text) {
+            // Placeholder: Safely return text. 
+            // In a pro environment with parsed JSON, we map words to <span class="t-ghunnah">word</span>
+            return text; 
+        }
+
+        async function copyText(text) {
+            try {
+                await navigator.clipboard.writeText(text);
+                alert("Ayah copied to clipboard!");
+            } catch (err) {}
+        }
+
+        // --- Audio Controller ---
+        const audioEl = document.getElementById('quranAudioEl');
+        const audioBar = document.getElementById('audioPlayer');
+        const playBtn = document.getElementById('playPauseBtn');
+
+        function playAyah(index) {
+            if (index < 0 || index >= state.activeAyahs.length) { stopAudio(); return; }
+            state.currentAudioIndex = index;
+            const ayah = state.activeAyahs[index];
+
+            // UI Highlighting
+            document.querySelectorAll('.ayah-block').forEach(el => el.classList.remove('playing-highlight'));
+            const block = document.getElementById(`ayah-${index}`);
+            block.classList.add('playing-highlight');
+            block.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            // Player UI
+            audioBar.classList.add('active');
+            document.getElementById('audioTitle').innerText = document.getElementById('readerSurahNameEn').innerText;
+            document.getElementById('audioSubtitle').innerText = `Ayah ${ayah.numberInSurah}`;
+            playBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
+
+            // Play Engine
+            audioEl.src = ayah.audio;
+            audioEl.play().catch(e => console.log("Audio play prevented", e));
+            
+            audioEl.onended = () => playNextAyah();
+        }
+
+        function toggleAudio() {
+            if (audioEl.paused) {
+                audioEl.play();
+                playBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
+            } else {
+                audioEl.pause();
+                playBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
+            }
+        }
+
+        function playNextAyah() { playAyah(state.currentAudioIndex + 1); }
+        function playPrevAyah() { playAyah(state.currentAudioIndex - 1); }
+        function stopAudio() {
+            audioEl.pause();
+            audioEl.currentTime = 0;
+            audioBar.classList.remove('active');
+            document.querySelectorAll('.ayah-block').forEach(el => el.classList.remove('playing-highlight'));
+        }
+
+        // --- Hadith Section ---
+        async function loadRandomHadith() {
+            const container = document.getElementById('hadithContent');
+            container.innerHTML = '<div class="loader"><i class="fa-solid fa-circle-notch fa-spin"></i> Fetching...</div>';
+            try {
+                const randomNum = Math.floor(Math.random() * 7000) + 1;
+                const res = await fetch(`${API_HADITH}/${randomNum}`);
+                const data = await res.json();
+                const h = data.data.contents;
+                
+                container.innerHTML = `
+                    <div class="arabic" style="margin-bottom: 20px;">${h.arab}</div>
+                    <p style="font-size: 15px; line-height: 1.6; margin-bottom: 15px;">${h.id}</p>
+                    <div style="font-size: 13px; color: var(--gold); font-weight: 600; text-align: center;">Sahih Bukhari: Hadith ${data.data.id}</div>
+                `;
+            } catch (err) {
+                container.innerHTML = '<p>Failed to load Hadith. Please try again.</p>';
+            }
+        }
+
+        // --- Tools Section ---
+        function openTool(id) {
+            document.getElementById('toolsMenu').classList.add('hidden');
+            document.getElementById(`tool-${id}`).classList.remove('hidden');
+        }
+        function closeTool() {
+            document.querySelectorAll('[id^="tool-"]').forEach(el => el.classList.add('hidden'));
+            document.getElementById('toolsMenu').classList.remove('hidden');
+        }
+
+        // Tasbih
+        function incrementTasbih() {
+            state.tasbihCount++;
+            document.getElementById('tasbihDisplay').innerText = state.tasbihCount;
+            localStorage.setItem('tasbihCount', state.tasbihCount);
+            if (navigator.vibrate) navigator.vibrate(40);
+        }
+        function resetTasbih() {
+            state.tasbihCount = 0;
+            document.getElementById('tasbihDisplay').innerText = state.tasbihCount;
+            localStorage.setItem('tasbihCount', 0);
+            if (navigator.vibrate) navigator.vibrate([40, 50, 40]);
+        }
+
+        // Qibla Compass
+        function initCompass() {
+            document.getElementById('startCompassBtn').classList.add('hidden');
+            document.getElementById('compassUI').classList.remove('hidden');
+
+            if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+                DeviceOrientationEvent.requestPermission()
+                    .then(permissionState => {
+                        if (permissionState === 'granted') {
+                            window.addEventListener('deviceorientation', handleOrientation);
+                        } else {
+                            alert("Compass requires orientation permission.");
+                        }
+                    }).catch(console.error);
+            } else {
+                window.addEventListener('deviceorientationabsolute', handleOrientation) || 
+                window.addEventListener('deviceorientation', handleOrientation);
+            }
+        }
+
+        function handleOrientation(event) {
+            let alpha = event.webkitCompassHeading || Math.abs(event.alpha - 360);
+            if (!alpha) return;
+
+            // Qibla Math (Approximation based on Lat/Lng to Kaaba 21.4225, 39.8262)
+            let qiblaBearing = 255; // Default approx fallback
+            if (state.location.lat) {
+                const latk = 21.4225 * Math.PI/180;
+                const longk = 39.8262 * Math.PI/180;
+                const latu = state.location.lat * Math.PI/180;
+                const longu = state.location.lng * Math.PI/180;
+                
+                const y = Math.sin(longk - longu);
+                const x = Math.cos(latu) * Math.tan(latk) - Math.sin(latu) * Math.cos(longk - longu);
+                let bearing = Math.atan2(y, x) * 180 / Math.PI;
+                qiblaBearing = (bearing + 360) % 360;
+            }
+
+            let rotation = qiblaBearing - alpha;
+            document.getElementById('compassRing').style.transform = `rotate(${rotation}deg)`;
+            document.getElementById('compassAngle').innerText = `Kaaba Bearing: ${Math.round(qiblaBearing)}°`;
+        }
+
+    </script>
+</body>
+</html>
